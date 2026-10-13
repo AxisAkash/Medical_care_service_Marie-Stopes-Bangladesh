@@ -84,6 +84,9 @@ button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
 a { color: inherit; text-decoration: none; }
+/* Keep compact enterprise metadata readable at the 12px minimum. */
+.text-\[10px\], .text-\[11px\] { font-size: 12px !important; line-height: 1.35 !important; }
+svg text { font-size: 12px; }
 ::selection { background: #b8e0ff; color: #084d83; }
 :focus-visible { outline: 3px solid rgba(22, 137, 223, .32); outline-offset: 2px; }
 .font-display { font-family: "Plus Jakarta Sans", sans-serif; }
