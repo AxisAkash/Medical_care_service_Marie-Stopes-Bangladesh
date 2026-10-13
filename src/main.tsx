@@ -5,15 +5,18 @@ import App from "./App";
 import "./index.css";
 import { LanguageProvider } from "./lib/i18n";
 import { AuthProvider } from "./auth/AuthContext";
+import { ThemeProvider } from "./lib/theme";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <LanguageProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </AuthProvider>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   </StrictMode>,
 );
