@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "check:colors": "node scripts/check-colors.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
