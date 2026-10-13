@@ -11,6 +11,12 @@ export function formatDate(date = new Date()) {
   return new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "Asia/Dhaka" }).format(date);
 }
 
+export function formatDateOffset(offsetDays: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  return formatDate(date);
+}
+
 export function formatCompactNumber(value: number) {
   return new Intl.NumberFormat("en-BD", { notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
