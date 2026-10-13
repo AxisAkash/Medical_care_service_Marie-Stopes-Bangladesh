@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { cn } from "../lib/utils";
+import { cn, formatShortBDT } from "../lib/utils";
 
 export function Sparkline({ data, color = "#1689df", fill = false, className }: { data: number[]; color?: string; fill?: boolean; className?: string }) {
   const width = 100; const height = 34; const min = Math.min(...data); const max = Math.max(...data); const range = max - min || 1;
@@ -22,7 +22,7 @@ export function DonutChart({ value, total, color = "#15998f", label, sublabel }:
   return <div className="relative h-40 w-40"><svg viewBox="0 0 120 120" className="h-full w-full -rotate-90"><circle cx="60" cy="60" r={radius} fill="none" stroke="#eef2f5" strokeWidth="12" /><circle cx="60" cy="60" r={radius} fill="none" stroke={color} strokeWidth="12" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} /></svg><div className="absolute inset-0 flex flex-col items-center justify-center"><strong className="font-display text-2xl font-bold text-neutral-900">{label}</strong><span className="text-[12px] text-neutral-500">{sublabel}</span></div></div>;
 }
 
-export function MiniBars({ values, labels, color = "#1689df" }: { values: number[]; labels: string[]; color?: string }) {
+export function MiniBars({ values, labels, color = "#1689df", formatValue }: { values: number[]; labels: string[]; color?: string; formatValue?: (value: number) => string }) {
   const max = Math.max(...values);
-  return <div className="flex h-32 items-end gap-3">{values.map((value, index) => <div className="group flex flex-1 flex-col items-center gap-2" key={labels[index]}><div className="relative flex h-24 w-full items-end"><div className="w-full rounded-t-md transition-all duration-300 group-hover:opacity-80" style={{ height: `${(value / max) * 100}%`, background: `linear-gradient(180deg, ${color}, ${color}88)` }}><span className="absolute -top-5 hidden w-full text-center text-[11px] font-semibold text-neutral-700 group-hover:block">{value}</span></div></div><span className="text-[11px] text-neutral-500">{labels[index]}</span></div>)}</div>;
+  return <div className="flex h-32 items-end gap-3">{values.map((value, index) => <div className="group flex flex-1 flex-col items-center gap-2" key={labels[index]}><div className="relative flex h-24 w-full items-end"><div className="w-full rounded-t-md transition-all duration-300 group-hover:opacity-80" style={{ height: `${(value / max) * 100}%`, background: `linear-gradient(180deg, ${color}, ${color}88)` }}><span className="absolute -top-5 hidden w-full text-center text-[11px] font-semibold text-neutral-700 group-hover:block">{formatValue ? formatValue(value) : max >= 1000 ? formatShortBDT(value) : value}</span></div></div><span className="text-[11px] text-neutral-500">{labels[index]}</span></div>)}</div>;
 }
