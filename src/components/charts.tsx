@@ -1,0 +1,28 @@
+import { useState } from "react";
+import { cn } from "../lib/utils";
+
+export function Sparkline({ data, color = "#1689df", fill = false, className }: { data: number[]; color?: string; fill?: boolean; className?: string }) {
+  const width = 100; const height = 34; const min = Math.min(...data); const max = Math.max(...data); const range = max - min || 1;
+  const points = data.map((value, index) => `${(index / (data.length - 1)) * width},${height - ((value - min) / range) * 25 - 4}`).join(" ");
+  return <svg className={cn("h-9 w-24 overflow-visible", className)} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-hidden="true">{fill && <polygon points={`0,34 ${points} 100,34`} fill={color} opacity=".1" />}{<polyline points={points} fill="none" stroke={color} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />}</svg>;
+}
+
+export function AreaChart({ data, labels, color = "#1689df", target, formatValue }: { data: number[]; labels: string[]; color?: string; target?: number; formatValue?: (value: number) => string }) {
+  const [hovered, setHovered] = useState<number | null>(null);
+  const width = 700; const height = 250; const pad = { top: 18, right: 14, bottom: 30, left: 36 }; const min = Math.min(...data, target ?? Infinity) * .88; const max = Math.max(...data, target ?? -Infinity) * 1.08; const range = max - min || 1;
+  const x = (i: number) => pad.left + (i / (data.length - 1)) * (width - pad.left - pad.right);
+  const y = (value: number) => pad.top + (1 - (value - min) / range) * (height - pad.top - pad.bottom);
+  const points = data.map((value, index) => `${x(index)},${y(value)}`).join(" ");
+  const area = `${pad.left},${height - pad.bottom} ${points} ${width - pad.right},${height - pad.bottom}`;
+  return <div className="relative h-[270px] w-full"><svg viewBox={`0 0 ${width} ${height}`} className="h-full w-full overflow-visible" preserveAspectRatio="none" onMouseLeave={() => setHovered(null)}>{[0, 1, 2, 3].map((line) => { const value = min + ((max - min) / 3) * line; return <g key={line}><line x1={pad.left} x2={width - pad.right} y1={y(value)} y2={y(value)} stroke="#dce4e9" strokeDasharray="3 4" /><text x="0" y={y(value) + 4} fill="#91a2af" fontSize="11">{formatValue ? formatValue(value) : Math.round(value)}</text></g>; })}{target !== undefined && <><line x1={pad.left} x2={width - pad.right} y1={y(target)} y2={y(target)} stroke="#c77b0a" strokeDasharray="5 4" /><text x={width - pad.right - 44} y={y(target) - 7} fill="#a96800" fontSize="10">Target</text></>}<defs><linearGradient id={`area-${color.replace("#", "")}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={color} stopOpacity=".22" /><stop offset="100%" stopColor={color} stopOpacity="0" /></linearGradient></defs><polygon points={area} fill={`url(#area-${color.replace("#", "")})`} /><polyline points={points} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />{data.map((value, index) => <g key={index} onMouseEnter={() => setHovered(index)} className="cursor-crosshair"><circle cx={x(index)} cy={y(value)} r={hovered === index ? 5 : 3} fill="white" stroke={color} strokeWidth="2" /><text x={x(index)} y={height - 7} textAnchor="middle" fill="#91a2af" fontSize="11">{labels[index]}</text></g>)}</svg>{hovered !== null && <div className="pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-[12px] shadow-float" style={{ left: `${(x(hovered) / width) * 100}%`, top: `${(y(data[hovered]) / height) * 100 - 14}%` }}><p className="font-semibold text-neutral-900">{labels[hovered]}</p><p style={{ color }} className="mt-0.5 font-mono">{formatValue ? formatValue(data[hovered]) : data[hovered]}</p></div>}</div>;
+}
+
+export function DonutChart({ value, total, color = "#15998f", label, sublabel }: { value: number; total: number; color?: string; label: string; sublabel: string }) {
+  const percent = Math.round((value / total) * 100); const radius = 48; const circumference = 2 * Math.PI * radius; const offset = circumference - (percent / 100) * circumference;
+  return <div className="relative h-40 w-40"><svg viewBox="0 0 120 120" className="h-full w-full -rotate-90"><circle cx="60" cy="60" r={radius} fill="none" stroke="#eef2f5" strokeWidth="12" /><circle cx="60" cy="60" r={radius} fill="none" stroke={color} strokeWidth="12" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} /></svg><div className="absolute inset-0 flex flex-col items-center justify-center"><strong className="font-display text-2xl font-bold text-neutral-900">{label}</strong><span className="text-[12px] text-neutral-500">{sublabel}</span></div></div>;
+}
+
+export function MiniBars({ values, labels, color = "#1689df" }: { values: number[]; labels: string[]; color?: string }) {
+  const max = Math.max(...values);
+  return <div className="flex h-32 items-end gap-3">{values.map((value, index) => <div className="group flex flex-1 flex-col items-center gap-2" key={labels[index]}><div className="relative flex h-24 w-full items-end"><div className="w-full rounded-t-md transition-all duration-300 group-hover:opacity-80" style={{ height: `${(value / max) * 100}%`, background: `linear-gradient(180deg, ${color}, ${color}88)` }}><span className="absolute -top-5 hidden w-full text-center text-[11px] font-semibold text-neutral-700 group-hover:block">{value}</span></div></div><span className="text-[11px] text-neutral-500">{labels[index]}</span></div>)}</div>;
+}
